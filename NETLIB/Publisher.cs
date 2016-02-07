@@ -15,7 +15,7 @@ namespace NETLIB
         protected ManualResetEvent manualEvent;
 
         protected bool enable;
-        protected bool imputEnabled;
+        protected bool inputEnabled;
 
         protected Thread publisherThread;
 
@@ -33,7 +33,7 @@ namespace NETLIB
             this.manualEvent = new ManualResetEvent(false);
             this.pack_queue = new Queue<byte[]>();
             enable = true;
-            imputEnabled = false;
+            inputEnabled = false;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace NETLIB
         /// </summary>
         public bool ImputEnabled
         {
-            get { return imputEnabled; }
+            get { return inputEnabled; }
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace NETLIB
         {
             if (enable)
             {
-                imputEnabled = true;
+                inputEnabled = true;
                 publisherThread = new Thread(Publish);
                 publisherThread.Start();
             }
@@ -139,7 +139,7 @@ namespace NETLIB
         /// </summary>
         public virtual void CloseConnection()
         {
-            imputEnabled = false;
+            inputEnabled = false;
             enable = false;
             manualEvent.Set();
             publisherThread.Abort();

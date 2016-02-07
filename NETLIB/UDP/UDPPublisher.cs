@@ -18,7 +18,7 @@ namespace NETLIB.UDP
         /// <summary>
         /// Create a new instance of TCPPublisher
         /// </summary>
-        /// <param name="imput">TCPClient's imput stream</param>
+        /// <param name="input">TCPClient's imput stream</param>
         /// <param name="manualEvent">Event to release the Consumer</param>
         /// <param name="pack_queue">Queue to publish packs</param>
         public UDPPublisher(int port)
@@ -126,7 +126,7 @@ namespace NETLIB.UDP
         {
             byte[] buffer;
 
-            while (imputEnabled)
+            while (inputEnabled)
             {
                 IPEndPoint info = null;
                 try
@@ -146,7 +146,7 @@ namespace NETLIB.UDP
         }
 
         /// <summary>
-        /// Stop the Imput and clode the Stream
+        /// Stop the Input and clode the Stream
         /// </summary>
         public override void CloseConnection()
         {

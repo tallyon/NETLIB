@@ -93,7 +93,7 @@ namespace NETLIB.TCP
 
             try
             {
-                while (imputEnabled)
+                while (inputEnabled)
                 {
                     buffer = new byte[BasePack.packSize];
                     if (input.Read(buffer, 0, buffer.Length) == 0)
