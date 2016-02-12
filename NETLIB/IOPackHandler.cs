@@ -3,6 +3,9 @@ using System.IO;
 
 namespace NETLIB
 {
+    /// <summary>
+    /// Connection has been closed
+    /// </summary>
     public class ConnectionClosedException : IOException
     {
         #region Contructor
@@ -16,6 +19,9 @@ namespace NETLIB
         #endregion
     }
 
+    /// <summary>
+    /// Connection still runnig
+    /// </summary>
     public class ConnectionRunnigException : IOException
     {
         #region Contructor
@@ -29,6 +35,10 @@ namespace NETLIB
         #endregion
     }
 
+    /// <summary>
+    /// Handle the input and output packs using events
+    /// </summary>
+    /// <typeparam name="TPack"></typeparam>
     public abstract class IOPackHandler<TPack> : Consumer<TPack> where TPack : BasePack
     {
         #region Variáveis

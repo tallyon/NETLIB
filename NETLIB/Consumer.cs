@@ -5,7 +5,11 @@ using System.Threading;
 
 namespace NETLIB
 {
-    public abstract class Consumer<TPack> where TPack : BasePack
+    /// <summary>
+    /// Consume the pack published by a publisher
+    /// </summary>
+    /// <typeparam name="TPack"></typeparam>
+    public abstract class Consumer<TPack> : IDisposable where TPack : BasePack
     {
         #region Variáveis
 
@@ -33,9 +37,17 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// End the publish and the consume
+        /// End the consume
         /// </summary>
         ~Consumer()
+        {
+            EndConsume();
+        }
+
+        /// <summary>
+        /// End the consume
+        /// </summary>
+        public void Dispose()
         {
             EndConsume();
         }

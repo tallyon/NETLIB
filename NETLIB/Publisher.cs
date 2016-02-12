@@ -5,7 +5,10 @@ using System.Threading;
 
 namespace NETLIB
 {
-    public abstract class Publisher
+    /// <summary>
+    /// Publish a pack received
+    /// </summary>
+    public abstract class Publisher : IDisposable
     {
         #region Variáveis
 
@@ -26,8 +29,6 @@ namespace NETLIB
         /// <summary>
         /// Create a new instance of Publisher
         /// </summary>
-        /// <param name="manualEvent">Event to release the Consumer</param>
-        /// <param name="pack_queue">Queue to publish packs</param>
         public Publisher()
         {
             this.manualEvent = new ManualResetEvent(false);
@@ -45,6 +46,14 @@ namespace NETLIB
             {
                 CloseConnection();   
             }
+        }
+
+        /// <summary>
+        /// Close the connection
+        /// </summary>
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
