@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePack.cs" />
+    <Compile Include="ConnectionClosedException.cs" />
+    <Compile Include="ConnectionRunnigException.cs" />
     <Compile Include="Consumer.cs" />
     <Compile Include="IOPackHandler.cs" />
     <Compile Include="IPackable.cs" />

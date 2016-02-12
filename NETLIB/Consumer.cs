@@ -6,6 +6,14 @@ using System.Threading;
 namespace NETLIB
 {
     /// <summary>
+    /// Delegate used to encapsulate a method tha will be called when a pack arrives
+    /// </summary>
+    /// <typeparam name="TPack">Type derived from BasePack that specify the pack to be used</typeparam>
+    /// <param name="consumer">Consumer that called that method</param>
+    /// <param name="receivedPack">Pack that arrived</param>
+    public delegate void ThrowPackHandler<TPack>(Consumer<TPack> consumer, TPack receivedPack) where TPack : BasePack;
+
+    /// <summary>
     /// Consume the pack published by a publisher
     /// </summary>
     /// <typeparam name="TPack"></typeparam>
@@ -13,7 +21,7 @@ namespace NETLIB
     {
         #region Variables
 
-        public event Action<Consumer<TPack>, TPack> ReceivedPack;
+        public event ThrowPackHandler<TPack> ReceivedPack;
         public event Action<Consumer<TPack>> ConnectionClosed;
 
         Publisher publisher;
@@ -21,6 +29,8 @@ namespace NETLIB
         Queue<byte[]> packQueue;
 
         Thread consumerThread;
+
+        bool isEnabled;
 
         #endregion
 
@@ -32,6 +42,7 @@ namespace NETLIB
         /// <param name="publisher">Publisher to be consumed</param>
         public Consumer(Publisher publisher)
         {
+            this.isEnabled = false;
             this.publisher = publisher;
             this.packQueue = publisher.PackQueue;
         }
@@ -57,11 +68,19 @@ namespace NETLIB
         #region Attributes
 
         /// <summary>
-        /// Gets the enable state of the imput/output
+        /// Gets if the consume is enabled
         /// </summary>
-        public bool Enable
+        public bool IsEnabled
         {
-            get { return publisher.Enable; }
+            get { return isEnabled; }
+        }
+
+        /// <summary>
+        /// Gets is the input is enabled
+        /// </summary>
+        public bool IsPublishEnabled
+        {
+            get { return publisher.IsEnable; }
         }
 
         /// <summary>
@@ -81,18 +100,20 @@ namespace NETLIB
         /// Call Publisher.SendPack
         /// </summary>
         /// <param name="packable">Pack</param>
-        public virtual void SendPack(TPack pack, IPEndPoint IP = null)
+        /// <param name="ip">Optional parameter used only by UDP protocol</param>
+        public virtual void SendPack(TPack pack, IPEndPoint ip = null)
         {
-            publisher.SendPack(pack, IP);
+            publisher.SendPack(pack, ip);
         }
 
         /// <summary>
         /// Call Publisher.SendPack
         /// </summary>
-        /// <param name="packable">Pack</param>
-        public virtual void SendPack(byte[] pack, IPEndPoint IP = null)
+        /// <param name="pack">Pack to be sender</param>
+        /// <param name="ip">Optional parameter used only by UDP protocol</param>
+        public virtual void SendPack(byte[] pack, IPEndPoint ip = null)
         {
-            publisher.SendPack(pack, IP);
+            publisher.SendPack(pack, ip);
         }
 
         /// <summary>
@@ -110,9 +131,9 @@ namespace NETLIB
         /// <summary>
         /// Begin the imput 
         /// </summary>
-        public void BeginConsume()
+        public void StartConsume()
         {
-            if (publisher.Enable)
+            if (publisher.IsEnable)
             {
                 if (consumerThread != null && consumerThread.IsAlive)
                 {
@@ -124,17 +145,17 @@ namespace NETLIB
             }
             else
             {
-                throw new ConnectionClosedException("Conexão já encerrada!");
+                throw new ConnectionClosedException("Connection closed!");
             }
         }
 
         /// <summary>
         /// Begin the publish enad the consume
         /// </summary>
-        public void BeginPublishConsume()
+        public void Start()
         {
-            publisher.BeginPublish();
-            BeginConsume();
+            publisher.Start();
+            StartConsume();
         }
 
         /// <summary>
@@ -152,8 +173,7 @@ namespace NETLIB
         {
             if (consumerThread != null)
             {
-                consumerThread.Interrupt();
-                consumerThread.Abort();
+                isEnabled = false;
             }
         }
 
@@ -165,7 +185,7 @@ namespace NETLIB
             if (consumerThread != null)
             {
                 publisher.CloseConnection();
-                consumerThread.Abort();
+                isEnabled = false;
             }
         }
 
@@ -174,7 +194,7 @@ namespace NETLIB
         /// </summary>
         private void Consume()
         {
-            while (publisher.ImputEnabled)
+            while (publisher.IsImputEnabled && isEnabled)
             {
                 while (packQueue.Count > 0)
                 {
@@ -196,7 +216,7 @@ namespace NETLIB
         /// <summary>
         /// Set the class events to NULL
         /// </summary>
-        protected void ClearEvets()
+        protected void ClearEvents()
         {
             this.ReceivedPack = null;
             this.ConnectionClosed = null;

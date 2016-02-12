@@ -4,6 +4,9 @@ using System.Net.Sockets;
 
 namespace NETLIB.UDP
 {
+    /// <summary>
+    /// Publisher using UDP
+    /// </summary>
     public class UDPPublisher : Publisher
     {
         #region Variables
@@ -62,20 +65,21 @@ namespace NETLIB.UDP
         /// Send a pack 
         /// </summary>
         /// <param name="pack">Pack to be sender</param>
-        public override void SendPack(BasePack pack, IPEndPoint IP = null)
+        /// <param name="ip">Address to send</param>
+        public override void SendPack(BasePack pack, IPEndPoint ip = null)
         {
-            if (enable)
+            if (isEnable)
             {
-                if (IP == null)
+                if (ip == null)
                 {
-                    throw new ArgumentNullException("IP não pode ser nulo!");
+                    throw new ArgumentNullException("IP cant be null!");
                 }
 
-                sender.Send(pack.Buffer, pack.Buffer.Length, IP);
+                sender.Send(pack.Buffer, pack.Buffer.Length, ip);
             }
             else
             {
-                throw new ConnectionClosedException("Conexão já encerrada!");
+                throw new ConnectionClosedException("Connection closed!");
             }
         }
 
@@ -83,20 +87,21 @@ namespace NETLIB.UDP
         /// Send a pack 
         /// </summary>
         /// <param name="pack">Pack to be sender</param>
-        public override void SendPack(byte[] pack, IPEndPoint IP = null)
+        /// <param name="ip">Address to send</param>
+        public override void SendPack(byte[] pack, IPEndPoint ip = null)
         {
-            if (enable)
+            if (isEnable)
             {
-                if (IP == null)
+                if (ip == null)
                 {
-                    throw new ArgumentNullException("IP não pode ser nulo!");
+                    throw new ArgumentNullException("IP can't be null");
                 }
 
-                sender.Send(pack, pack.Length, IP);
+                sender.Send(pack, pack.Length, ip);
             }
             else
             {
-                throw new ConnectionClosedException("Conexão já encerrada!");
+                throw new ConnectionClosedException("Connection closed!");
             }
         }
 
@@ -108,13 +113,13 @@ namespace NETLIB.UDP
         /// <param name="port">Host's port</param>
         public void SendPack(BasePack pack, string host_name, int port)
         {
-            if (enable)
+            if (isEnable)
             {
                 sender.Send(pack.Buffer, pack.Buffer.Length);
             }
             else
             {
-                throw new ConnectionClosedException("Conexão já encerrada!");
+                throw new ConnectionClosedException("Connection closed!");
             }
         }
 
@@ -122,11 +127,11 @@ namespace NETLIB.UDP
         /// Publish packs in pack_queue
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public override void Publish()
+        protected override void Publish()
         {
             byte[] buffer;
 
-            while (inputEnabled)
+            while (isInputEnabled)
             {
                 IPEndPoint info = null;
                 try
@@ -140,7 +145,7 @@ namespace NETLIB.UDP
                 {
                     OnConnectionClosedCall();
                     Console.WriteLine(e.Message);
-                    Console.WriteLine("Conexão encerrada no recebimento. Host destino não responde.");
+                    Console.WriteLine("Connection closed! Host do not answer.");
                 }
             }
         }

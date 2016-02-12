@@ -5,6 +5,9 @@ using System.Net.Sockets;
 
 namespace NETLIB.TCP
 {
+    /// <summary>
+    /// Publisher using TCP
+    /// </summary>
     public class TCPPublisher : Publisher
     {
         #region Variables
@@ -44,10 +47,10 @@ namespace NETLIB.TCP
         /// Send a pack 
         /// </summary>
         /// <param name="pack">Pack to be sender</param>
-        /// <param name="IP">Ip to send</param>
-        public override void SendPack(BasePack pack, IPEndPoint IP = null)
+        ///  <param name="ip">Optional parameter used only by UDP protocol</param>
+        public override void SendPack(BasePack pack, IPEndPoint ip = null)
         {
-            if (enable)
+            if (isEnable)
             {
                 try
                 {
@@ -57,7 +60,7 @@ namespace NETLIB.TCP
                 {
                     OnConnectionClosedCall();
                     Console.WriteLine(e.Message);
-                    Console.WriteLine("Conexão encerrada no envio. Host destino não responde.");
+                    Console.WriteLine("Connection closed! Host do not answer.");
                 }
             }
         }
@@ -66,10 +69,10 @@ namespace NETLIB.TCP
         /// Send a pack 
         /// </summary>
         /// <param name="pack">Pack to be sender</param>
-        /// <param name="IP">Ip to send</param>
-        public override void SendPack(byte[] pack, IPEndPoint IP = null)
+        ///  <param name="ip">Optional parameter used only by UDP protocol</param>
+        public override void SendPack(byte[] pack, IPEndPoint ip = null)
         {
-            if (enable)
+            if (isEnable)
             {
                 try
                 {
@@ -79,7 +82,7 @@ namespace NETLIB.TCP
                 {
                     OnConnectionClosedCall();
                     Console.WriteLine(e.Message);
-                    Console.WriteLine("Conexão encerrada no envio. Host destino não responde.");
+                    Console.WriteLine("Connection closed! Host do not answer.");
                 }
             }
         }
@@ -87,13 +90,13 @@ namespace NETLIB.TCP
         /// <summary>
         /// Publish packs in pack_queue
         /// </summary>
-        public override void Publish()
+        protected override void Publish()
         {
             byte[] buffer;
 
             try
             {
-                while (inputEnabled)
+                while (isInputEnabled)
                 {
                     buffer = new byte[BasePack.packSize];
                     if (input.Read(buffer, 0, buffer.Length) == 0)
@@ -108,7 +111,7 @@ namespace NETLIB.TCP
             }
             finally
             {
-                Console.WriteLine("Conexão encerrada no recebimento. Host destino não responde.");
+                Console.WriteLine("Connection closed! Host do not answer.");
                 CloseConnection();
             }
 
@@ -123,9 +126,9 @@ namespace NETLIB.TCP
             base.CloseConnection();
         }
 
-        public static TCPPublisher GetPublisher(string IP, int port)
+        public static TCPPublisher GetPublisher(string ip, int port)
         {
-            TcpClient client = new TcpClient(IP, port);
+            TcpClient client = new TcpClient(ip, port);
             return new TCPPublisher(client.GetStream());
         }
 

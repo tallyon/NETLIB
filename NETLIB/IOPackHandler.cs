@@ -3,37 +3,37 @@ using System.IO;
 
 namespace NETLIB
 {
-    /// <summary>
-    /// Connection has been closed
-    /// </summary>
-    public class ConnectionClosedException : IOException
-    {
-        #region Contructor
+    #region teste
 
-        public ConnectionClosedException() : base(){ }
 
-        public ConnectionClosedException(string message)
-            : base(message)
-        { }
 
-        #endregion
-    }
 
-    /// <summary>
-    /// Connection still runnig
-    /// </summary>
-    public class ConnectionRunnigException : IOException
-    {
-        #region Contructor
 
-        public ConnectionRunnigException() : base() { }
 
-        public ConnectionRunnigException(string message)
-            : base(message)
-        { }
 
-        #endregion
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #endregion
+
+
 
     /// <summary>
     /// Handle the input and output packs using events
@@ -43,7 +43,7 @@ namespace NETLIB
     {
         #region Variables
 
-        Action<Consumer<TPack>, TPack>[] triggers;
+        private ThrowPackHandler<TPack>[] triggers;
 
         #endregion
 
@@ -54,16 +54,23 @@ namespace NETLIB
         /// </summary>
         /// <param name="publisher">Publisher to consume</param>
         /// <param name="eventDict">The dictionary reference of the pack's header trigger</param>
-        public IOPackHandler(Publisher publisher, Action<Consumer<TPack>, TPack>[] eventDict)
+        public IOPackHandler(Publisher publisher, ThrowPackHandler<TPack>[] eventDict)
             : base(publisher)
         {
-            if (eventDict.Length <= sizeof(byte))
+            if (eventDict != null)
             {
-                this.triggers = eventDict;   
+                if (eventDict.Length <= byte.MaxValue)
+                {
+                    this.triggers = eventDict;
+                }
+                else
+                {
+                    throw new ArgumentException("Out of range", "eventDict");
+                }
             }
             else
             {
-                throw new ArgumentException("Dicionário maior que o esperado!");
+                throw new ArgumentNullException("Null", "eventDict");
             }
         }
 
@@ -74,9 +81,8 @@ namespace NETLIB
         public IOPackHandler(Publisher publisher)
             : base(publisher)
         {
-            this.triggers = new Action<Consumer<TPack>, TPack>[256];
+            this.triggers = new ThrowPackHandler<TPack>[256];
         }
-
 
         #endregion
 
@@ -85,20 +91,19 @@ namespace NETLIB
         /// <summary>
         /// Dictionary byte events
         /// </summary>
-        public Action<Consumer<TPack>, TPack>[] Triggers
+        public ThrowPackHandler<TPack>[] Triggers
         {
             get { return triggers; }
             set { triggers = value; }
         }
 
         /// <summary>
-        ///     Gets the event regarding a key
+        /// Gets the method reletad to a specific id
         /// </summary>
-        /// <param name="index">Index of the pack</param> 
-        /// <returns>EventHandler event</returns>
+        /// <param name="index">Index of the pack</param>
+        /// <returns></returns>
         /// <exception cref="KeyNotFoundException">When the imput index do not exists</exception>
-        /// <exception cref=""
-        public Action<Consumer<TPack>, TPack> this[byte index]
+        public ThrowPackHandler<TPack> this[byte index]
         {
             get
             {
@@ -119,24 +124,24 @@ namespace NETLIB
         /// Set new triggers to the PackHandler
         /// </summary>
         /// <param name="eventDict">New dictionary of triggers</param>
-        public void SetTriggers(Action<Consumer<TPack>, TPack>[] eventDict)
+        public void SetTriggers(ThrowPackHandler<TPack>[] eventDict)
         {
-            if (eventDict.Length <= sizeof(byte))
+            if (eventDict.Length <= byte.MaxValue)
             {
                 this.triggers = eventDict;
             }
             else
             {
-                throw new ArgumentException("Dicionário maior que o esperado!");
+                throw new ArgumentException("Out of range", "eventDict");
             }
         }
 
         /// <summary>
-        /// Add a eathod that will be called when the pack's header is 'Key'
+        /// Add a method that will be called when the pack's header is equal 'Key'
         /// </summary>
         /// <param name="key">Pack's header</param>
         /// <param name="value">Method</param>
-        public void AddTrigger(byte key, Action<Consumer<TPack>, TPack> value)
+        public void AddTrigger(byte key, ThrowPackHandler<TPack> value)
         {
             triggers[key] += value;
         }
@@ -159,7 +164,7 @@ namespace NETLIB
             {
                 triggers[i] = null;
             }
-            base.ClearEvets();
+            base.ClearEvents();
         }
 
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NETLIB.UDP
+﻿namespace NETLIB.UDP
 {
     public class UDPIOPackHandler : IOPackHandler<UDPPack>
     {
@@ -14,7 +12,7 @@ namespace NETLIB.UDP
 
         public UDPIOPackHandler(UDPPublisher publisher) : base(publisher) { }
 
-        public UDPIOPackHandler(UDPPublisher publisher, Action<Consumer<UDPPack>, UDPPack>[] eventDict) : base(publisher, eventDict) { }
+        public UDPIOPackHandler(UDPPublisher publisher, ThrowPackHandler<UDPPack>[] eventDict) : base(publisher, eventDict) { }
 
         #endregion
 

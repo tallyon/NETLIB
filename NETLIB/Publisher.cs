@@ -17,8 +17,8 @@ namespace NETLIB
         protected Queue<byte[]> pack_queue;
         protected ManualResetEvent manualEvent;
 
-        protected bool enable;
-        protected bool inputEnabled;
+        protected bool isEnable;
+        protected bool isInputEnabled;
 
         protected Thread publisherThread;
 
@@ -33,8 +33,8 @@ namespace NETLIB
         {
             this.manualEvent = new ManualResetEvent(false);
             this.pack_queue = new Queue<byte[]>();
-            enable = true;
-            inputEnabled = false;
+            isEnable = true;
+            isInputEnabled = false;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace NETLIB
         /// </summary>
         ~Publisher()
         {
-            if (enable != false)
+            if (isEnable != false)
             {
                 CloseConnection();   
             }
@@ -53,7 +53,10 @@ namespace NETLIB
         /// </summary>
         public void Dispose()
         {
-            throw new NotImplementedException();
+            if (isEnable != false)
+            {
+                CloseConnection();
+            }
         }
 
         #endregion
@@ -61,19 +64,19 @@ namespace NETLIB
         #region Attributes
 
         /// <summary>
-        /// Gets the imput state
+        /// Gets if the input is enabled
         /// </summary>
-        public bool ImputEnabled
+        public bool IsImputEnabled
         {
-            get { return inputEnabled; }
+            get { return isInputEnabled; }
         }
 
         /// <summary>
         /// Gets the enable state of the imput/output
         /// </summary>
-        public bool Enable
+        public bool IsEnable
         {
-            get { return enable; }
+            get { return isEnable; }
         }
 
         /// <summary>
@@ -82,7 +85,6 @@ namespace NETLIB
         public Queue<byte[]> PackQueue
         {
             get { return pack_queue; }
-            set { pack_queue = value; }
         }
 
         /// <summary>
@@ -112,34 +114,36 @@ namespace NETLIB
         /// <summary>
         /// Publish packs in pack_queue
         /// </summary>
-        public abstract void Publish();
+        protected abstract void Publish();
 
         /// <summary>
         /// Send a pack 
         /// </summary>
         /// <param name="pack">Pack to be sender</param>
-        public abstract void SendPack(BasePack pack, IPEndPoint IP = null);
+        ///  <param name="ip">Optional parameter used only by UDP protocol</param>
+        public abstract void SendPack(BasePack pack, IPEndPoint ip = null);
 
         /// <summary>
         /// Send a pack 
         /// </summary>
         /// <param name="pack">Pack to be sender</param>
-        public abstract void SendPack(byte[] pack, IPEndPoint IP = null);
+        /// <param name="ip">Optional parameter used only by UDP protocol</param>
+        public abstract void SendPack(byte[] pack, IPEndPoint ip = null);
 
         /// <summary>
         /// Begin the imput 
         /// </summary>
-        public void BeginPublish()
+        public void Start()
         {
-            if (enable)
+            if (isEnable)
             {
-                inputEnabled = true;
+                isInputEnabled = true;
                 publisherThread = new Thread(Publish);
                 publisherThread.Start();
             }
             else
             {
-                throw new ConnectionClosedException("Conexão já encerrada!");
+                throw new ConnectionClosedException("Connection closed!");
             }
         }
 
@@ -148,10 +152,9 @@ namespace NETLIB
         /// </summary>
         public virtual void CloseConnection()
         {
-            inputEnabled = false;
-            enable = false;
+            isInputEnabled = false;
+            isEnable = false;
             manualEvent.Set();
-            publisherThread.Abort();
             OnConnectionClosedCall();
         }
 

@@ -14,7 +14,7 @@ namespace NETLIB
 
         public BasePackIOPackHandler(Publisher publisher) : base(publisher) { }
 
-        public BasePackIOPackHandler(Publisher publisher, Action<Consumer<BasePack>, BasePack>[] eventDict) : base(publisher, eventDict) { }
+        public BasePackIOPackHandler(Publisher publisher, ThrowPackHandler<BasePack>[] eventDict) : base(publisher, eventDict) { }
 
         #endregion
 

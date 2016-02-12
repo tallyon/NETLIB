@@ -100,16 +100,16 @@ namespace NETLIB.Security
             this.encrypted = false;
         }
 
-        public override void SendPack(CryptPack pack, IPEndPoint IP = null)
+        public override void SendPack(CryptPack pack, IPEndPoint ip = null)
         {
             if (encrypted && pack.IsEncrypted)
             {
                 byte[] buffer = cryptProvider.GetEncrypt(pack.Buffer, pack.BeginOfCryptography, pack.Length - pack.BeginOfCryptography);
-                base.SendPack(buffer, IP);
+                base.SendPack(buffer, ip);
             }
             else
             {
-                base.SendPack(pack, IP);
+                base.SendPack(pack, ip);
             }
         }
 
