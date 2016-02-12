@@ -10,7 +10,7 @@ namespace NETLIB
     /// </summary>
     public abstract class Publisher : IDisposable
     {
-        #region Variáveis
+        #region Variables
 
         public event Action ConnectionClosed;
 
@@ -58,7 +58,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Gets the imput state
@@ -96,7 +96,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Call CloseConnection event

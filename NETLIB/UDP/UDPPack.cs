@@ -2,7 +2,7 @@
 {
     public class UDPPack : BasePack
     {
-        #region Variáveis
+        #region Variables
 
 
 
@@ -28,7 +28,7 @@
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         public string Address
         {
@@ -37,7 +37,7 @@
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
 
 

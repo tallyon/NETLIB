@@ -7,7 +7,7 @@ namespace NETLIB
     /// </summary>
     public class BasePack
     {
-        #region Variáveis
+        #region Variables
 
         public static int packSize = 1500;
 
@@ -55,7 +55,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Pack's Header
@@ -127,7 +127,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Write a buffer in the pack
@@ -590,7 +590,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Métodos estáticos
+        #region Methods estáticos
 
         /// <summary>
         /// Get a string in the offset of the pack

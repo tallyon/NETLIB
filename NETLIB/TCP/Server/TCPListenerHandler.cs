@@ -6,7 +6,7 @@ namespace NETLIB.TCP.Server
 {
     public class TCPListenerHandler
     {
-        #region Variáveis
+        #region Variables
 
         public event Action<Publisher> ReceivedConnection;
 
@@ -44,7 +44,7 @@ namespace NETLIB.TCP.Server
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Gets enabled
@@ -56,7 +56,7 @@ namespace NETLIB.TCP.Server
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Call received connection

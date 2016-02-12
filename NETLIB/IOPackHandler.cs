@@ -41,7 +41,7 @@ namespace NETLIB
     /// <typeparam name="TPack"></typeparam>
     public abstract class IOPackHandler<TPack> : Consumer<TPack> where TPack : BasePack
     {
-        #region Variáveis
+        #region Variables
 
         Action<Consumer<TPack>, TPack>[] triggers;
 
@@ -80,7 +80,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Dictionary byte events
@@ -113,7 +113,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Set new triggers to the PackHandler

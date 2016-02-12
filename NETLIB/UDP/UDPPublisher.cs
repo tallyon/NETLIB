@@ -6,7 +6,7 @@ namespace NETLIB.UDP
 {
     public class UDPPublisher : Publisher
     {
-        #region Variáveis
+        #region Variables
 
         UdpClient listener;
         UdpClient sender;
@@ -34,7 +34,7 @@ namespace NETLIB.UDP
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Get the listener
@@ -56,7 +56,7 @@ namespace NETLIB.UDP
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Send a pack 

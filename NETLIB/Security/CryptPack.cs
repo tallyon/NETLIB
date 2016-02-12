@@ -2,7 +2,7 @@
 {
     public class CryptPack : BasePack
     {
-        #region Variáveis
+        #region Variables
 
         const int CID_POSITION = 2;
 
@@ -63,7 +63,7 @@
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         public override byte ID
         {
@@ -105,7 +105,7 @@
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
 
 

@@ -4,7 +4,7 @@ namespace NETLIB
 {
     public class BasePackIOPackHandler : IOPackHandler<BasePack>
     {
-        #region Variáveis
+        #region Variables
 
 
 
@@ -18,13 +18,13 @@ namespace NETLIB
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
 
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         public override BasePack PackFactory(BasePack pack)
         {

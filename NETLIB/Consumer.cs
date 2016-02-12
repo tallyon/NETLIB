@@ -11,7 +11,7 @@ namespace NETLIB
     /// <typeparam name="TPack"></typeparam>
     public abstract class Consumer<TPack> : IDisposable where TPack : BasePack
     {
-        #region Variáveis
+        #region Variables
 
         public event Action<Consumer<TPack>, TPack> ReceivedPack;
         public event Action<Consumer<TPack>> ConnectionClosed;
@@ -54,7 +54,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Gets the enable state of the imput/output
@@ -75,7 +75,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Call Publisher.SendPack

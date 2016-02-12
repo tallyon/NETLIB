@@ -2,7 +2,7 @@
 {
     public class Rotor
     {
-        #region Variáveis
+        #region Variables
 
         int cifrasParaRotacionar;
         int passosMaximosPorRotacao;
@@ -46,7 +46,7 @@
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         public int CifrasParaRotacionar
         {
@@ -70,7 +70,7 @@
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         private void EncryptRotation()
         {

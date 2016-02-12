@@ -5,7 +5,7 @@ namespace NETLIB.Security
 {
     public class CryptIOPackHandler : IOPackHandler<CryptPack>
     {
-        #region Variáveis
+        #region Variables
 
         RotorServiceProvider cryptProvider;
 
@@ -66,7 +66,7 @@ namespace NETLIB.Security
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         public bool Encryptated
         {
@@ -75,7 +75,7 @@ namespace NETLIB.Security
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         public void BeginEncrypt(int num_rotores, string[] keys, int[] num_encriptacoes, int[] num_rotacoes)
         {

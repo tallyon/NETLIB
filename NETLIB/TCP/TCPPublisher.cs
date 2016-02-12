@@ -7,7 +7,7 @@ namespace NETLIB.TCP
 {
     public class TCPPublisher : Publisher
     {
-        #region Variáveis
+        #region Variables
 
         Stream input;
 
@@ -26,7 +26,7 @@ namespace NETLIB.TCP
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         /// <summary>
         /// Gets the imput output stream
@@ -38,7 +38,7 @@ namespace NETLIB.TCP
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         /// <summary>
         /// Send a pack 

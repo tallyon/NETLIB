@@ -4,7 +4,7 @@ namespace Crypt
 {
     public class RotorServiceProvider
     {
-        #region Variáveis
+        #region Variables
 
         const int DEFAULT_CIFRAS_PARA_ROTACIONAR = 1;
         const int DEFAULT_PASSOS_MAXIMOS_POR_ROTACAO = 3;
@@ -102,7 +102,7 @@ namespace Crypt
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
         public Rotor[] Rotores
         {
@@ -111,7 +111,7 @@ namespace Crypt
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         public void Encrypt(byte[] buffer, int offset, int count)
         {
@@ -179,7 +179,7 @@ namespace Crypt
 
     public static class KeyServiceProvider
     {
-        #region Variáveis
+        #region Variables
 
 
 
@@ -191,13 +191,13 @@ namespace Crypt
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
 
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         public static string[] GerarKeys(string key, int num_keys)
         {

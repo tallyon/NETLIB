@@ -4,7 +4,7 @@ namespace NETLIB.UDP
 {
     public class UDPIOPackHandler : IOPackHandler<UDPPack>
     {
-        #region Variáveis
+        #region Variables
 
 
 
@@ -18,13 +18,13 @@ namespace NETLIB.UDP
 
         #endregion
 
-        #region Atributos
+        #region Attributes
 
 
 
         #endregion
 
-        #region Métodos
+        #region Methods
 
         public override UDPPack PackFactory(BasePack pack)
         {
