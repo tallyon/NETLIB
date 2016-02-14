@@ -3,17 +3,64 @@
 namespace NETLIB
 {
     /// <summary>
-    /// Class that override the buffer and manage the header
+    /// Is the basic unit of the network communication, in other words all the information that travels over 
+    /// the network is converted in BasePack before transmission and is subsequently
+    /// reassembled by the receiver. It simplifies operations with the network buffer and handle reading and writing.
     /// </summary>
+    /// <example>
+    /// This example shows how to create a new pack, put and get some fields from there. 
+    /// <code>
+    /// void Example()
+    /// {
+    ///     int d1 = 5;
+    ///     int d2 = 6;
+    ///     
+    ///     int c1;
+    ///     int c2;
+    ///     
+    ///     BasePack newPack = new BasePack();
+    ///     newPack.ID = 10;
+    ///     newPack.PutInt(d1);
+    ///     newPack.PutInt(d2);
+    ///     
+    ///     c1 = newPack.GetInt();
+    ///     c2 = newPack.GetInt();
+    /// }
+    /// </code>
+    /// </example>
     public class BasePack
     {
         #region Variables
 
+        /// <summary>
+        /// Represent the maximum size of the network buffer. The pack buffer will never be bigger than this.
+        /// <para>Used by <see cref="Publisher"/> to receive the network buffer</para>
+        /// </summary>
+        /// <seealso cref="Publisher"/>
+        /// <seealso cref="TCP.TCPPublisher"/>
         public static int packSize = 1500;
 
+        /// <summary>
+        /// Hold the pack information
+        /// <para>Used by <see cref="Publisher"/> to send the information</para>
+        /// </summary>
         protected byte[] buffer;
 
+        /// <summary>
+        /// Stores the index to be used in the buffer for the next read
+        /// </summary>
+        /// The read position is initialized to 1 because the first byte is used as a packet <see cref="ID"/>
+        /// <seealso cref="ID"/>
+        /// <seealso cref="IOPackHandler{TPack}.OnReceivedPackCall(TPack)"/>
+        /// <seealso cref="IOPackHandler{TPack}.triggers"/>
         protected int readPosition = 1;
+
+        /// <summary>
+        /// Stores the index to be used in the buffer for the next write
+        /// </summary>
+        /// The write position is initialized to 1 because the first byte is used as a packet <see cref="ID"/>
+        /// <seealso cref="IOPackHandler{TPack}.OnReceivedPackCall(TPack)"/>
+        /// <seealso cref="IOPackHandler{TPack}.triggers"/>
         protected int writePosition = 1;
 
         #endregion
@@ -21,17 +68,18 @@ namespace NETLIB
         #region Constructor
 
         /// <summary>
-        ///     Initialize the BasePack
+        /// Initialize que buffer with packSize
         /// </summary>
+        /// <seealso cref="packSize"/>
         public BasePack()
         {
             this.buffer = new byte[packSize];
         }
 
         /// <summary>
-        /// Initialize the BasePack
+        /// Makes a copy of the incoming pack
         /// </summary>
-        /// <param name="basePack">BasePack that will be copy</param>
+        /// <param name="basePack">BasePack that will be copied</param>
         protected BasePack(BasePack basePack)
         {
             this.buffer = basePack.buffer;
@@ -43,13 +91,13 @@ namespace NETLIB
         /// <param name="buffer">Source buffer</param>
         protected BasePack(byte[] buffer)
         {
-            if (buffer.Length == packSize)
+            if (buffer.Length <= packSize)
             {
                 this.buffer = buffer;
             }
             else
             {
-                throw new ArgumentOutOfRangeException("Entrada não entra nos parâmetros do pacote!");
+                throw new ArgumentOutOfRangeException("buffer");
             }
         }
 
@@ -58,8 +106,13 @@ namespace NETLIB
         #region Attributes
 
         /// <summary>
-        /// Pack's Header
+        /// Used by <see cref="IOPackHandler{TPack}"/> to classify and redirect incoming packs to the proper handle function.
+        /// <para>Refers to the first byte of the buffer</para>
         /// </summary>
+        /// <remarks>As with any application protocol it is required something to identify the kind of the package, thus,
+        /// I set that the first byte in the buffer will be used for that purpose</remarks>
+        /// <seealso cref="IOPackHandler{TPack}.OnReceivedPackCall(TPack)"/>
+        /// <seealso cref="IOPackHandler{TPack}.triggers"/>
         public virtual byte ID
         {
             get { return buffer[0]; }
@@ -68,10 +121,13 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Gets the buffer's byte
+        /// Make the buffer's data public but deny the exchange of buffer reference
         /// </summary>
-        /// <param name="index">Index of the byte</param>
-        /// <returns></returns>
+        /// <param name="index">Index of the byte to be read</param>
+        /// <returns>A byte of the byffer indexed by index</returns>
+        /// <exception cref = "ArgumentOutOfRangeException">
+        ///     When the index is larger than <see cref="buffer"/>
+        /// </exception> 
         public virtual byte this[int index]
         {
             get { return buffer[index]; }
@@ -80,7 +136,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Pack's Length
+        /// Length of the inner buffer
         /// </summary>
         public virtual int Length
         {
@@ -88,27 +144,15 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// The pack size related to BasePack.packSize
+        ///     Returns the inner buffer
         /// </summary>
-        public virtual int PackSize
-        {
-            get { return packSize; }
-            set { packSize = value; }
-        }
-
-        /// <summary>
-        ///     Returns the pack's buffer
-        /// </summary>
-        /// <exception cref = "ArgumentOutOfRangeException">
-        ///     When the setter's buffer is larger than the maximum packet size
-        /// </exception> 
         public virtual byte[] Buffer
         {
             get { return buffer; }
         }
 
         /// <summary>
-        /// Return the read position
+        /// Gets and sets the readPosition
         /// </summary>
         public virtual int ReadPosition
         {
@@ -117,7 +161,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// return the write position
+        /// Gets and sets the writePosition
         /// </summary>
         public virtual int WritePosition
         {
@@ -130,13 +174,35 @@ namespace NETLIB
         #region Methods
 
         /// <summary>
-        /// Write a buffer in the pack
+        /// Copies a sequence of bytes to the pack and advances the current <see cref="writePosition"/> by the number of bytes copied.
         /// </summary>
-        /// <param name="buffer">Buffer to be writed</param>
-        /// <param name="offset">Begin of sub buffer</param>
-        /// <param name="count">Lenth of sub buffer</param>
+        /// <param name="buffer">An array of bytes. This method copies count bytes from buffer to the pack.</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the pack.</param>
+        /// <param name="count">The number of bytes to be copied.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when the <paramref name="offset"/> is larger than the buffer size 
+        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
+        /// </exception>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Throws when <see cref="writePosition"/> plus <paramref name="count"/> is larger or equal than the inner buffer length.
+        /// </exception>
         public virtual void Write(byte[] buffer, int offset, int count)
         {
+            if (writePosition + count >= this.buffer.Length)
+            {
+                throw new IndexOutOfRangeException("Read position larger than buffer length.");
+            }
+
+            if (offset >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("offset");
+            }
+
+            if (offset + count >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("count");
+            }
+
             for (int i = 0; i < count; i++)
             {
                 this.buffer[writePosition] = buffer[offset + i];
@@ -145,13 +211,35 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Read a buffer from the pack
+        /// Copies a sequence of bytes from the pack and advances the current <see cref="readPosition"/> by the number of bytes copied.
         /// </summary>
-        /// <param name="buffer">Buffer to past the data</param>
-        /// <param name="offset">Begin of writing data</param>
-        /// <param name="count">Lenth of th data</param>
+        /// <param name="buffer">An array of bytes. This method copies count bytes from pack to the buffer.</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the pack.</param>
+        /// <param name="count">The number of bytes to be copied.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when the <paramref name="offset"/> is larger than the buffer size
+        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
+        /// </exception>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Throws when <see cref="readPosition"/> plus <paramref name="count"/> is larger or equal than the inner buffer length.
+        /// </exception>
         public virtual void Read(byte[] buffer, int offset, int count)
         {
+            if (readPosition + count >= this.buffer.Length)
+            {
+                throw new IndexOutOfRangeException("Read position larger than buffer length.");
+            }
+
+            if (offset >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("offset");
+            }
+
+            if (offset + count >= buffer.Length)
+            {
+                throw new ArgumentOutOfRangeException("count");
+            }
+
             for (int i = 0; i < count; i++)
             {
                 buffer[offset + i] = this.buffer[readPosition];
@@ -160,20 +248,37 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Get a string in the readPosition of the pack
+        /// Converts a part of the inner buffer(started in <see cref="readPosition"/>) in a string.
+        /// <para>
+        /// First it reads an integer from the buffer, that refers to the lenght of the string.
+        /// Then reads the chars one by one from the buffer and put them in a string.
+        /// </para>
         /// </summary>
-        /// <returns>String from the pack</returns>
+        /// <returns>String converted from the inner buffer started in <see cref="readPosition"/>.</returns>
+        /// <exception cref="FormatException">
+        /// Throws when the length of the string read from the inner buffer is 
+        /// bigger than the remaining bytes in the inner buffer
+        /// </exception>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Throws when <see cref="readPosition"/> is larger or equal than the inner buffer length minus sizeof(int).
+        /// </exception>
         public virtual string GetString()
         {
-            string result = string.Empty;
-            int size = BitConverter.ToInt32(buffer, readPosition);
-
-            if (size > this.Length - sizeof(int))
+            if (readPosition >= this.buffer.Length - sizeof(int))
             {
-                throw new FormatException("Entrada não se encaixa como uma string!");
+                throw new IndexOutOfRangeException("Read position larger than buffer length.");
             }
 
-            for (int i = readPosition + sizeof(int); i < size + sizeof(int) + readPosition; i++)
+            string result = string.Empty;
+            int size = BitConverter.ToInt32(buffer, readPosition);
+            readPosition += sizeof(int);
+
+            if (size + readPosition >= this.buffer.Length)
+            {
+                throw new FormatException("The read length is larger than the remaining bytes!");
+            }
+
+            for (int i = readPosition; i < size + readPosition; i++)
             {
                 result += (char)this.buffer[i];
             }
@@ -182,12 +287,28 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Get a string in the offset of the pack
+        /// Converts a part of the inner buffer(started in <paramref name="offset"/>) in a string.
+        /// <para>
+        /// First it reads an integer from the buffer, that refers to the lenght of the string.
+        /// Then reads the chars one by one from the buffer and put them in a string.
+        /// </para>
         /// </summary>
-        /// <param name="offset">Index to get the string</param>
-        /// <returns>String from the pack</returns>
+        /// <param name="offset">Starting position for the string conversion.</param>
+        /// <returns>String converted from the inner buffer started in <paramref name="offset"/>.</returns>
+        /// <exception cref="FormatException">
+        /// Throws when the length of the string read from the inner buffer is 
+        /// less than the remaining bytes in the inner buffer.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when <paramref name="offset"/> is larger or equal than the inner buffer length minus sizeof(int).
+        /// </exception>
         protected virtual string GetString(int offset)
         {
+            if (offset >= this.buffer.Length)
+            {
+                throw new IndexOutOfRangeException("Offset larger than buffer length.");
+            }
+
             string result = string.Empty;
             int size = BitConverter.ToInt32(buffer, offset);
 
@@ -204,21 +325,32 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Get a int readPosition From the pack
+        /// Converts a part of the inner buffer(started in <see cref="readPosition"/>) in a int.
         /// </summary>
-        /// <returns>A int from the pack</returns>
+        /// <returns>Int converted from the inner buffer started in <see cref="readPosition"/>.</returns>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Throws when <see cref="readPosition"/> is larger or equal than the inner buffer length minus sizeof(int).
+        /// </exception>
         public virtual int GetInt()
         {
+            if (readPosition >= this.buffer.Length - sizeof(int))
+            {
+                throw new IndexOutOfRangeException("Read position larger than buffer length.");
+            }
+
             int ret = BitConverter.ToInt32(buffer, readPosition);
             readPosition += sizeof(int);
             return ret;
         }
 
         /// <summary>
-        /// Get a int offset From the pack
+        /// Converts a part of the inner buffer(started in <paramref name="offset"/>) in a int.
         /// </summary>
-        /// <param name="offset">Index to get the int</param>
-        /// <returns>A int from the pack</returns>
+        /// <returns>Int converted from the inner buffer started in <paramref name="offset"/>.</returns>
+        /// <param name="offset">Starting position for the int conversion.</param>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Throws when <see cref="readPosition"/> is larger or equal than the inner buffer length minus sizeof(int).
+        /// </exception>
         protected virtual int GetInt(int offset)
         {
             return BitConverter.ToInt32(buffer, offset);
