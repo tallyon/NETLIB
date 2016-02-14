@@ -190,7 +190,7 @@ namespace NETLIB
         {
             if (writePosition + count >= this.buffer.Length)
             {
-                throw new IndexOutOfRangeException("Read position larger than buffer length.");
+                throw new IndexOutOfRangeException("Write position larger than buffer length.");
             }
 
             if (offset >= buffer.Length)
@@ -353,6 +353,11 @@ namespace NETLIB
         /// </exception>
         protected virtual int GetInt(int offset)
         {
+            if (offset >= this.buffer.Length - sizeof(int))
+            {
+                throw new IndexOutOfRangeException("Offset larger than buffer length.");
+            }
+
             return BitConverter.ToInt32(buffer, offset);
         }
 
