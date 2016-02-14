@@ -194,7 +194,7 @@ namespace NETLIB
         /// </summary>
         private void Consume()
         {
-            while (publisher.IsImputEnabled && isEnabled)
+            while (publisher.IsInputEnabled && isEnabled)
             {
                 while (packQueue.Count > 0)
                 {

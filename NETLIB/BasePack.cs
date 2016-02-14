@@ -21,24 +21,24 @@ namespace NETLIB
         #region Constructor
 
         /// <summary>
-        ///     Initialize the BasePack
+        /// Initialize the BasePack
         /// </summary>
         public BasePack()
         {
-            this.buffer = new byte[packSize];
+            buffer = new byte[packSize];
         }
 
         /// <summary>
-        /// Initialize the BasePack
+        /// Initialize the BasePack copying buffer of /basePack/
         /// </summary>
-        /// <param name="basePack">BasePack that will be copy</param>
+        /// <param name="basePack">BasePack that will be copied</param>
         protected BasePack(BasePack basePack)
         {
-            this.buffer = basePack.buffer;
+            buffer = basePack.buffer;
         }
 
         /// <summary>
-        /// Initialize the BasePack
+        /// Initialize the BasePack with /buffer/
         /// </summary>
         /// <param name="buffer">Source buffer</param>
         protected BasePack(byte[] buffer)
@@ -104,7 +104,12 @@ namespace NETLIB
         /// </exception> 
         public virtual byte[] Buffer
         {
-            get { return buffer; }
+            get
+            {
+                byte[] returnBuffer = new byte[Length];
+                returnBuffer = buffer;
+                return returnBuffer;
+            }
         }
 
         /// <summary>
@@ -132,7 +137,7 @@ namespace NETLIB
         /// <summary>
         /// Write a buffer in the pack
         /// </summary>
-        /// <param name="buffer">Buffer to be writed</param>
+        /// <param name="buffer">Buffer to write</param>
         /// <param name="offset">Begin of sub buffer</param>
         /// <param name="count">Lenth of sub buffer</param>
         public virtual void Write(byte[] buffer, int offset, int count)
@@ -150,7 +155,7 @@ namespace NETLIB
         /// <param name="buffer">Buffer to past the data</param>
         /// <param name="offset">Begin of writing data</param>
         /// <param name="count">Lenth of th data</param>
-        public virtual void Read(byte[] buffer, int offset, int count)
+        public virtual void Read(ref byte[] buffer, int offset, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -168,21 +173,21 @@ namespace NETLIB
             string result = string.Empty;
             int size = BitConverter.ToInt32(buffer, readPosition);
 
-            if (size > this.Length - sizeof(int))
+            if (size > Length - sizeof(int))
             {
                 throw new FormatException("Entrada não se encaixa como uma string!");
             }
 
             for (int i = readPosition + sizeof(int); i < size + sizeof(int) + readPosition; i++)
             {
-                result += (char)this.buffer[i];
+                result += (char)buffer[i];
             }
             readPosition += size + sizeof(int);
             return result;
         }
 
         /// <summary>
-        /// Get a string in the offset of the pack
+        /// Get a string from the pack with /offset/
         /// </summary>
         /// <param name="offset">Index to get the string</param>
         /// <returns>String from the pack</returns>
@@ -191,14 +196,14 @@ namespace NETLIB
             string result = string.Empty;
             int size = BitConverter.ToInt32(buffer, offset);
 
-            if (size > this.Length - sizeof(int))
+            if (size > Length - sizeof(int))
             {
                 throw new FormatException("Entrada não se encaixa como uma string!");
             }
 
             for (int i = offset + sizeof(int); i < size + sizeof(int) + offset; i++)
             {
-                result += (char)this.buffer[i];
+                result += (char)buffer[i];
             }
             return result;
         }
@@ -558,24 +563,20 @@ namespace NETLIB
         /// <returns>Deep copy BasePack</returns>
         public virtual BasePack DeepCopy()
         {
-            BasePack retorno = new BasePack();
+            BasePack returnedBasePack = new BasePack();
 
             for (int i = 0; i < packSize; i++)
             {
-                retorno[i] = this[i];
+                returnedBasePack[i] = this[i];
             }
-            return retorno;
+            return returnedBasePack;
         }
 
-        /// <summary>
-        ///      Initialize and returns the BazePack
-        ///</summary>
-        ///<param name="buffer">
-        ///     The buffer that is the base of the pack
-        ///</param>
-        ///<exception cref = "ArgumentOutOfRangeException">
-        ///     When the base_pack buffer is larger than the maximum packet size
-        ///</exception>
+        /// <summary>Initialize and returns the BasePack
+        /// <param name="buffer">The buffer that is the base of the pack</param>
+        /// <exception cref = "ArgumentOutOfRangeException">
+        ///     When the basePack buffer is larger than the maximum packet size
+        /// </exception>
         public static implicit operator BasePack(byte[] buffer)
         {
             if (buffer.Length == packSize)
@@ -590,7 +591,7 @@ namespace NETLIB
 
         #endregion
 
-        #region Methods estáticos
+        #region Static methods
 
         /// <summary>
         /// Get a string in the offset of the pack

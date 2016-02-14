@@ -31,8 +31,8 @@ namespace NETLIB
         /// </summary>
         public Publisher()
         {
-            this.manualEvent = new ManualResetEvent(false);
-            this.pack_queue = new Queue<byte[]>();
+            manualEvent = new ManualResetEvent(false);
+            pack_queue = new Queue<byte[]>();
             isEnable = true;
             isInputEnabled = false;
         }
@@ -66,13 +66,13 @@ namespace NETLIB
         /// <summary>
         /// Gets if the input is enabled
         /// </summary>
-        public bool IsImputEnabled
+        public bool IsInputEnabled
         {
             get { return isInputEnabled; }
         }
 
         /// <summary>
-        /// Gets the enable state of the imput/output
+        /// Gets the enable state of the input/output
         /// </summary>
         public bool IsEnable
         {
