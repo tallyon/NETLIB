@@ -148,12 +148,7 @@ namespace NETLIB
         /// </summary>
         public virtual byte[] Buffer
         {
-            get
-            {
-                byte[] returnBuffer = new byte[Length];
-                returnBuffer = buffer;
-                return returnBuffer;
-        }
+            get { return buffer; }
         }
 
         /// <summary>
