@@ -3,12 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3C15E76B-BE80-4D02-A411-7723D4612E40}</ProjectGuid>
+    <ProjectGuid>{86841BC0-23C4-4979-8781-D46E5152DAA7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NETLIBNETLIB_Tests</RootNamespace>
-    <AssemblyName>NETLIBNETLIB Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>NETLIB_Tests</RootNamespace>
+    <AssemblyName>NETLIB_Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,7 +16,6 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NETLIB\NETLIB.csproj">
-      <Project>{4CF62175-4C8F-43D8-B5DD-19B48B038040}</Project>
+      <Project>{4cf62175-4c8f-43d8-b5dd-19b48b038040}</Project>
       <Name>NETLIB</Name>
     </ProjectReference>
   </ItemGroup>

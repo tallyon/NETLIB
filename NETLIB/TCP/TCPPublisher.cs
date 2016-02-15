@@ -118,7 +118,7 @@ namespace NETLIB.TCP
         }
 
         /// <summary>
-        /// Stop the Imput and clode the Stream
+        /// Stop the Input and clode the Stream
         /// </summary>
         public override void CloseConnection()
         {

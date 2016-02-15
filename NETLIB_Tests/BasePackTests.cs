@@ -1,16 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NETLIB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace NETLIB.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class BasePackTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void WriteTestAreBuffersEqual()
         {
             // Arrange
@@ -26,7 +21,7 @@ namespace NETLIB.Tests
                 Assert.AreEqual(buff[i], buffWritten[i + 1]);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ReadTestAreBuffersEqual()
         {
             // Arrange
@@ -36,13 +31,13 @@ namespace NETLIB.Tests
 
             // Act
             byte[] buffRead = new byte[buff.Length];
-            basePack.Read(ref buffRead, 0, buffRead.Length);
+            basePack.Read(buffRead, 0, buffRead.Length);
 
             // Assert
             CollectionAssert.AreEqual(buff, buffRead);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutStringTestAndGetStringTest()
         {
             // Arrange
@@ -57,7 +52,7 @@ namespace NETLIB.Tests
             Assert.AreEqual(stringPut, stringGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutIntAtTheBeginningAndGetIntFromBeginningTest()
         {
             // Arrange
@@ -72,7 +67,7 @@ namespace NETLIB.Tests
             Assert.AreEqual(intPut, intGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutDoubleAtTheBeginningAndGetDoubleFromTheBeginningTest()
         {
             // Arrange
@@ -87,7 +82,7 @@ namespace NETLIB.Tests
             Assert.AreEqual(doublePut, doubleGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutFloatAtTheBeginningAndGetFloatFromTheBeginningTest()
         {
             // Arrange
@@ -102,7 +97,7 @@ namespace NETLIB.Tests
             Assert.AreEqual(floatPut, floatGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutCharAtTheBeginningAndGetCharFromTheBeginningTest()
         {
             // Arrange
@@ -117,7 +112,7 @@ namespace NETLIB.Tests
             Assert.AreEqual(charPut, charGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutByteAtTheBeginningAndGetByteFromTheBeginningTest()
         {
             // Arrange
@@ -132,7 +127,7 @@ namespace NETLIB.Tests
             Assert.AreEqual(bytePut, byteGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void PutBoolAtTheBeginningAndGetBoolFromTheBeginningTest()
         {
             // Arrange
@@ -147,12 +142,12 @@ namespace NETLIB.Tests
             Assert.AreEqual(boolPut, boolGet);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void ConversionFromByteArrayToBasePackTest()
         {
             // Arrange
             BasePack basePack = new BasePack();
-            byte[] byteArray = new byte[basePack.PackSize];
+            byte[] byteArray = new byte[BasePack.packSize];
             for (int i = 0; i < byteArray.Length; i++)
                 byteArray[i] = (byte)(i % 256);
 
