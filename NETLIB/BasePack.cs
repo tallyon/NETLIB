@@ -68,7 +68,7 @@ namespace NETLIB
         #region Constructor
 
         /// <summary>
-        /// Initialize the buffer with packSize
+        /// Initialize the inner buffer with packSize
         /// </summary>
         /// <seealso cref="packSize"/>
         public BasePack()
@@ -77,7 +77,8 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Initialize the BasePack copying buffer of /basePack/
+        /// Takes the <paramref name="basePack"/> inner buffer as its own inner beffer.
+        /// The <see cref="readPosition"/> and the <see cref="writePosition"/> are not copied
         /// </summary>
         /// <param name="basePack">BasePack that will be copied</param>
         protected BasePack(BasePack basePack)
@@ -86,14 +87,14 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Initialize the BasePack with /buffer/
+        /// Initialize the BasePack taking <paramref name="buffer"/> as your own inner buffer
         /// </summary>
         /// <param name="buffer">Source buffer</param>
         protected BasePack(byte[] buffer)
         {
             if (buffer.Length <= packSize)
             {
-                this.buffer = buffer;
+                buffer = buffer;
             }
             else
             {
@@ -121,7 +122,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Make the buffer's data public but deny the exchange of buffer reference
+        /// Make the buffer's data public but deny the exchange of buffer reference.
         /// </summary>
         /// <param name="index">Index of the byte to be read</param>
         /// <returns>A byte of the byffer indexed by index</returns>
@@ -144,7 +145,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        ///     Returns the inner buffer
+        ///     Returns the inner buffer but deny the exchange of buffer reference
         /// </summary>
         public virtual byte[] Buffer
         {
@@ -179,12 +180,12 @@ namespace NETLIB
         /// <param name="buffer">An array of bytes. This method copies count bytes from buffer to the pack.</param>
         /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the pack.</param>
         /// <param name="count">The number of bytes to be copied.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Throws when the <paramref name="offset"/> is larger than the buffer size 
-        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
-        /// </exception>
         /// <exception cref="IndexOutOfRangeException">
         /// Throws when <see cref="writePosition"/> plus <paramref name="count"/> is larger or equal than the inner buffer length.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when the <paramref name="offset"/> is larger or equal than the buffer length 
+        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
         /// </exception>
         public virtual void Write(byte[] buffer, int offset, int count)
         {
@@ -198,7 +199,7 @@ namespace NETLIB
                 throw new ArgumentOutOfRangeException("offset");
             }
 
-            if (offset + count >= buffer.Length)
+            if (offset + count > buffer.Length)
             {
                 throw new ArgumentOutOfRangeException("count");
             }
@@ -216,12 +217,12 @@ namespace NETLIB
         /// <param name="buffer">An array of bytes. This method copies count bytes from pack to the buffer.</param>
         /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the pack.</param>
         /// <param name="count">The number of bytes to be copied.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Throws when the <paramref name="offset"/> is larger than the buffer size
-        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
-        /// </exception>
         /// <exception cref="IndexOutOfRangeException">
         /// Throws when <see cref="readPosition"/> plus <paramref name="count"/> is larger or equal than the inner buffer length.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when the <paramref name="offset"/> is larger or equal than the buffer length
+        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
         /// </exception>
         public virtual void Read(byte[] buffer, int offset, int count)
         {
@@ -235,7 +236,7 @@ namespace NETLIB
                 throw new ArgumentOutOfRangeException("offset");
             }
 
-            if (offset + count >= buffer.Length)
+            if (offset + count > buffer.Length)
             {
                 throw new ArgumentOutOfRangeException("count");
             }
@@ -264,7 +265,7 @@ namespace NETLIB
         /// </exception>
         public virtual string GetString()
         {
-            if (readPosition >= this.buffer.Length - sizeof(int))
+            if (readPosition >= buffer.Length - sizeof(int))
             {
                 throw new IndexOutOfRangeException("Read position larger than buffer length.");
             }
@@ -273,7 +274,7 @@ namespace NETLIB
             int size = BitConverter.ToInt32(buffer, readPosition);
             readPosition += sizeof(int);
 
-            if (size + readPosition >= this.buffer.Length)
+            if (size + readPosition >= buffer.Length)
             {
                 throw new FormatException("The read length is larger than the remaining bytes!");
             }
@@ -304,7 +305,7 @@ namespace NETLIB
         /// </exception>
         protected virtual string GetString(int offset)
         {
-            if (offset >= this.buffer.Length)
+            if (offset >= buffer.Length)
             {
                 throw new IndexOutOfRangeException("Offset larger than buffer length.");
             }
@@ -333,7 +334,7 @@ namespace NETLIB
         /// </exception>
         public virtual int GetInt()
         {
-            if (readPosition >= this.buffer.Length - sizeof(int))
+            if (readPosition >= buffer.Length - sizeof(int))
             {
                 throw new IndexOutOfRangeException("Read position larger than buffer length.");
             }
@@ -353,7 +354,7 @@ namespace NETLIB
         /// </exception>
         protected virtual int GetInt(int offset)
         {
-            if (offset >= this.buffer.Length - sizeof(int))
+            if (offset >= buffer.Length - sizeof(int))
             {
                 throw new IndexOutOfRangeException("Offset larger than buffer length.");
             }
@@ -430,9 +431,9 @@ namespace NETLIB
         /// <returns>A byte from the pack</returns>
         public virtual byte GetByte()
         {
-            byte retorno = buffer[readPosition];
+            byte returnedByte = buffer[readPosition];
             readPosition++;
-            return retorno;
+            return returnedByte;
         }
 
         /// <summary>
@@ -473,9 +474,9 @@ namespace NETLIB
         /// <returns>A custom type</returns>
         public virtual CustomType GetPackable<CustomType>() where CustomType : IPackable, new()
         {
-            CustomType retorno = new CustomType();
-            retorno.Unpack(this);
-            return retorno;
+            CustomType returnedCustomType = new CustomType();
+            returnedCustomType.Unpack(this);
+            return returnedCustomType;
         }
 
         /// <summary>
@@ -704,11 +705,15 @@ namespace NETLIB
             return returnedBasePack;
         }
 
-        /// <summary>Initialize and returns the BasePack
-        /// <param name="buffer">The buffer that is the base of the pack</param>
-        /// <exception cref = "ArgumentOutOfRangeException">
-        ///     When the basePack buffer is larger than the maximum packet size
-        /// </exception>
+        /// <summary>
+        ///      Initialize and returns the BasePack
+        ///</summary>
+        ///<param name="buffer">
+        ///     The buffer that is the base of the pack
+        ///</param>
+        ///<exception cref = "ArgumentOutOfRangeException">
+        ///     When the base_pack buffer is larger than the maximum packet size
+        ///</exception>
         public static implicit operator BasePack(byte[] buffer)
         {
             if (buffer.Length == packSize)
@@ -728,6 +733,7 @@ namespace NETLIB
         /// <summary>
         /// Get a string in the offset of the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the string</param>
         /// <returns>String from the pack</returns>
         public static string GetString(byte[] buffer, int offset)
@@ -750,6 +756,7 @@ namespace NETLIB
         /// <summary>
         /// Get a int offset From the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the int</param>
         /// <returns>A int from the pack</returns>
         public static int GetInt(byte[] buffer, int offset)
@@ -760,6 +767,7 @@ namespace NETLIB
         /// <summary>
         /// Get a double offset From the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the double</param>
         /// <returns>A double from the pack</returns>
         public static double GetDouble(byte[] buffer, int offset)
@@ -770,6 +778,7 @@ namespace NETLIB
         /// <summary>
         /// Get a float offset From the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the float</param>
         /// <returns>A float from the pack</returns>
         public static float GetFloat(byte[] buffer, int offset)
@@ -780,6 +789,7 @@ namespace NETLIB
         /// <summary>
         /// Get a char offset From the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the char</param>
         /// <returns>A char from the pack</returns>
         public static char GetChar(byte[] buffer, int offset)
@@ -790,6 +800,7 @@ namespace NETLIB
         /// <summary>
         /// Get a byte offset From the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the byte</param>
         /// <returns>A byte from the pack</returns>
         public static byte GetByte(byte[] buffer, int offset)
@@ -800,6 +811,7 @@ namespace NETLIB
         /// <summary>
         /// Get a bool offset From the pack
         /// </summary>
+        /// <param name="buffer">Buffer from which data is read</param>
         /// <param name="offset">Index to get the bool</param>
         /// <returns>A bool from the pack</returns>
         public static bool GetBool(byte[] buffer, int offset)
@@ -810,6 +822,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a string in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">String to be writed</param>
         /// <param name="offset">Index to put the string</param>
         public static void PutString(byte[] buffer, string value, int offset)
@@ -831,6 +844,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a int in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">Int to be writed</param>
         /// <param name="offset">Index to put the int</param>
         public static void PutInt(byte[] buffer, int value, int offset)
@@ -847,6 +861,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a double in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">Double to be writed</param>
         /// <param name="offset">Index to put the double</param>
         public static void PutDouble(byte[] buffer, double value, int offset)
@@ -863,6 +878,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a float in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">Float to be writed</param>
         /// <param name="offset">Index to put the float</param>
         public static void PutFloat(byte[] buffer, float value, int offset)
@@ -879,6 +895,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a char in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">Char to be writed</param>
         /// <param name="offset">Index to put the char</param>
         public static void PutChar(byte[] buffer, char value, int offset)
@@ -889,6 +906,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a byte in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">Byte to be writed</param>
         /// <param name="offset">Index to put the byte</param>
         public static void PutByte(byte[] buffer, byte value, int offset)
@@ -899,6 +917,7 @@ namespace NETLIB
         /// <summary>
         /// Writes a bool in the writePosition of the pack
         /// </summary>
+        /// <param name="buffer">Buffer to which data is written</param>
         /// <param name="value">Bool to be writed</param>
         /// <param name="offset">Index to put the bool</param>
         public static void PutBool(byte[] buffer, bool value, int offset)
