@@ -68,7 +68,7 @@ namespace NETLIB
         #region Constructor
 
         /// <summary>
-        /// Initialize que buffer with packSize
+        /// Initialize the inner buffer with packSize
         /// </summary>
         /// <seealso cref="packSize"/>
         public BasePack()
@@ -77,7 +77,8 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Makes a copy of the incoming pack
+        /// Takes the <paramref name="basePack"/> inner buffer as its own inner beffer.
+        /// The <see cref="readPosition"/> and the <see cref="writePosition"/> are not copied
         /// </summary>
         /// <param name="basePack">BasePack that will be copied</param>
         protected BasePack(BasePack basePack)
@@ -86,7 +87,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Initialize the BasePack
+        /// Initialize the BasePack taking <paramref name="buffer"/> as your own inner buffer
         /// </summary>
         /// <param name="buffer">Source buffer</param>
         protected BasePack(byte[] buffer)
@@ -121,7 +122,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Make the buffer's data public but deny the exchange of buffer reference
+        /// Make the buffer's data public but deny the exchange of buffer reference.
         /// </summary>
         /// <param name="index">Index of the byte to be read</param>
         /// <returns>A byte of the byffer indexed by index</returns>
@@ -144,7 +145,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        ///     Returns the inner buffer
+        ///     Returns the inner buffer but deny the exchange of buffer reference
         /// </summary>
         public virtual byte[] Buffer
         {
@@ -179,12 +180,12 @@ namespace NETLIB
         /// <param name="buffer">An array of bytes. This method copies count bytes from buffer to the pack.</param>
         /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the pack.</param>
         /// <param name="count">The number of bytes to be copied.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Throws when the <paramref name="offset"/> is larger than the buffer size 
-        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
-        /// </exception>
         /// <exception cref="IndexOutOfRangeException">
         /// Throws when <see cref="writePosition"/> plus <paramref name="count"/> is larger or equal than the inner buffer length.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when the <paramref name="offset"/> is larger or equal than the buffer length 
+        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
         /// </exception>
         public virtual void Write(byte[] buffer, int offset, int count)
         {
@@ -198,7 +199,7 @@ namespace NETLIB
                 throw new ArgumentOutOfRangeException("offset");
             }
 
-            if (offset + count >= buffer.Length)
+            if (offset + count > buffer.Length)
             {
                 throw new ArgumentOutOfRangeException("count");
             }
@@ -216,12 +217,12 @@ namespace NETLIB
         /// <param name="buffer">An array of bytes. This method copies count bytes from pack to the buffer.</param>
         /// <param name="offset">The zero-based byte offset in buffer at which to begin copying bytes to the pack.</param>
         /// <param name="count">The number of bytes to be copied.</param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// Throws when the <paramref name="offset"/> is larger than the buffer size
-        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
-        /// </exception>
         /// <exception cref="IndexOutOfRangeException">
         /// Throws when <see cref="readPosition"/> plus <paramref name="count"/> is larger or equal than the inner buffer length.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Throws when the <paramref name="offset"/> is larger or equal than the buffer length
+        /// and when <paramref name="offset"/> plus <paramref name="count"/> is larger than the buffer size.
         /// </exception>
         public virtual void Read(byte[] buffer, int offset, int count)
         {
@@ -235,7 +236,7 @@ namespace NETLIB
                 throw new ArgumentOutOfRangeException("offset");
             }
 
-            if (offset + count >= buffer.Length)
+            if (offset + count > buffer.Length)
             {
                 throw new ArgumentOutOfRangeException("count");
             }
@@ -430,9 +431,9 @@ namespace NETLIB
         /// <returns>A byte from the pack</returns>
         public virtual byte GetByte()
         {
-            byte retorno = buffer[readPosition];
+            byte returnedByte = buffer[readPosition];
             readPosition++;
-            return retorno;
+            return returnedByte;
         }
 
         /// <summary>
@@ -473,9 +474,9 @@ namespace NETLIB
         /// <returns>A custom type</returns>
         public virtual CustomType GetPackable<CustomType>() where CustomType : IPackable, new()
         {
-            CustomType retorno = new CustomType();
-            retorno.Unpack(this);
-            return retorno;
+            CustomType returnedCustomType = new CustomType();
+            returnedCustomType.Unpack(this);
+            return returnedCustomType;
         }
 
         /// <summary>
@@ -695,13 +696,13 @@ namespace NETLIB
         /// <returns>Deep copy BasePack</returns>
         public virtual BasePack DeepCopy()
         {
-            BasePack retorno = new BasePack();
+            BasePack returnedBasePack = new BasePack();
 
             for (int i = 0; i < packSize; i++)
             {
-                retorno[i] = this[i];
+                returnedBasePack[i] = this[i];
             }
-            return retorno;
+            return returnedBasePack;
         }
 
         /// <summary>

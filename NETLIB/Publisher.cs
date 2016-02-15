@@ -66,7 +66,7 @@ namespace NETLIB
         /// <summary>
         /// Gets if the input is enabled
         /// </summary>
-        public bool IsImputEnabled
+        public bool IsInputEnabled
         {
             get { return isInputEnabled; }
         }
@@ -148,7 +148,7 @@ namespace NETLIB
         }
 
         /// <summary>
-        /// Stop the Imput and close the Stream
+        /// Stop the Input and close the Stream
         /// </summary>
         public virtual void CloseConnection()
         {
