@@ -5,7 +5,7 @@ namespace NETLIB.Tests
     [TestClass]
     public class BasePackTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void WriteTestAreBuffersEqual()
         {
             // Arrange

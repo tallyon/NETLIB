@@ -94,7 +94,7 @@ namespace NETLIB
         {
             if (buffer.Length <= packSize)
             {
-                buffer = buffer;
+                this.buffer = buffer;
             }
             else
             {
@@ -125,7 +125,7 @@ namespace NETLIB
         /// Make the buffer's data public but deny the exchange of buffer reference.
         /// </summary>
         /// <param name="index">Index of the byte to be read</param>
-        /// <returns>A byte of the byffer indexed by index</returns>
+        /// <returns>A byte of the buffer indexed by index</returns>
         /// <exception cref = "ArgumentOutOfRangeException">
         ///     When the index is larger than <see cref="buffer"/>
         /// </exception> 
